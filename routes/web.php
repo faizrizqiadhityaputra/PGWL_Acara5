@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PointsController;
 use App\Http\Controllers\PolygonController;
-use App\Http\Controllers\PolylinesController;
+use App\Http\Controllers\polylinesController;
 use App\Http\Controllers\PageController;
 
 Route::get('/', function () {
@@ -13,19 +13,15 @@ Route::get('/', function () {
 Route::get('/peta', [PageController::class, 'peta'])->name('peta');
 Route::get('/tabel', [PageController::class, 'tabel'])->name('tabel');
 
-// Points
 Route::post('/points', [PointsController::class, 'store'])
     ->name('points.store');
 
-// Polylines
-Route::post('/polylines', [PolylinesController::class, 'store'])
-    ->name('polylines.store');
+Route::post('/polylines', [polylinesController::class, 'store'])
+    ->name('polyline.store');
 
-// Polygons
-Route::post('/polygon', [PolygonController::class, 'store'])
-    ->name('polygon.store');
+Route::post('/polygons', [PolygonController::class, 'store'])
+    ->name('polygons.store');
 
-// Dashboard
 Route::view('/dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');

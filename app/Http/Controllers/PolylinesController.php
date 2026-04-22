@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\polylinesModel;
 use Illuminate\Http\Request;
 
-class PolylinesController extends Controller
+class polylinesController extends Controller
 {
     protected $polylines;
      public function __construct()
@@ -32,19 +32,19 @@ class PolylinesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'geometry_polyline' => 'required',
+            'geometry_polylines' => 'required',
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
         ],
         [
-            'geometry_polyline.required' => 'Geometry polyline is required.',
+            'geometry_polylines.required' => 'Geometry polylines is required.',
             'name.required' => 'Field name harus diisi.',
             'name.string' => 'Field name harus berupa string.',
             'name.max' => 'Field name tidak boleh lebih dari 255 karakter.',
         ]);
 
        $data = [
-            'geom' => $request->geometry_polyline,
+            'geom' => $request->geometry_polylines,
             'name' => $request->name,
             'description' => $request->description,
         ];
@@ -53,7 +53,7 @@ class PolylinesController extends Controller
         $this->polylines->create($data);
 
         // Kembali ke halaman peta
-        return redirect()->route('peta')->with('success', 'Polyline created successfully.');
+        return redirect()->route('peta')->with('success', 'polylines created successfully.');
     }
 
     /**

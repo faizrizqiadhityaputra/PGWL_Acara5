@@ -2,11 +2,41 @@
 
 namespace App\Models;
 
-use Faker\Guesser\Name;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class pointsModel extends Model
 {
     protected $table = 'points';
     protected $guarded = ['id'];
+
+    public function geojson()
+    {
+        $points = $this->select(DB::raw('id, ST_AsGeoJSON(geom) as geojson, name, description, image, created_at, updated_at'))
+            ->get();
+
+        $geojson = [
+            'type' => 'FeatureCollection',
+            'features' => []
+        ];
+
+        foreach ($points as $p) {
+            $features = [
+                'type' => 'Feature',
+                'geometry' => json_decode($p->geojson), // <-- FIX DI SINI
+                'properties' => [
+                    'id' => $p->id,
+                    'name' => $p->name,
+                    'description' => $p->description,
+                    'image' => $p->image,
+                    'created_at' => $p->created_at,
+                    'updated_at' => $p->updated_at
+                ]
+            ];
+
+            array_push($geojson['features'], $features);
+        }
+
+        return $geojson;
+    }
 }

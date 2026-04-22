@@ -7,20 +7,15 @@ use Illuminate\Http\Request;
 
 class PolygonController extends Controller
 {
-    // Menggunakan nama yang konsisten
     protected $polygon;
 
-    public function __construct(PolygonModel $polygon)
+    public function __construct(PolygonModel $polygons)
     {
-        $this->polygon = $polygon;
+        $this->polygon = $polygons;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'geometry_polygon' => 'required',
             'name' => 'required|string|max:255',
@@ -37,12 +32,28 @@ class PolygonController extends Controller
             'description' => $request->description ?? null,
         ];
 
-        // PERBAIKAN: Gunakan $this->polygon (tanpa 's') sesuai deklarasi di atas
         $this->polygon->create($data);
 
-        // Kembali ke halaman peta
         return redirect()->route('peta')->with('success', 'Polygon berhasil disimpan!');
     }
 
-    // ... method lainnya tetap sama
+    public function show(string $id)
+    {
+        //
+    }
+
+    public function edit(string $id)
+    {
+        //
+    }
+
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    public function destroy(string $id)
+    {
+        //
+    }
 }
