@@ -4,31 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\polylinesModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class polylinesController extends Controller
 {
     protected $polylines;
+
     public function __construct()
     {
         $this->polylines = new polylinesModel();
     }
 
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate(
@@ -43,20 +29,24 @@ class polylinesController extends Controller
                 'name.required' => 'Field name harus diisi.',
                 'name.string' => 'Field name harus berupa string.',
                 'name.max' => 'Field name tidak boleh lebih dari 255 karakter.',
-                'image.mines' => 'File gambar harus berformat JPEG, PNG, atau JPG.',
+                'image.mimes' => 'File gambar harus berformat JPEG, PNG, atau JPG.', // Perbaikan typo 'mines' -> 'mimes'
                 'image.max' => 'Ukuran gambar tidak boleh lebih dari 2MB',
             ]
         );
 
+        // Path direktori ke public/storage/images agar bisa diakses helper asset()
+        $directory = public_path('storage/images');
+
         // Membuat direktori jika belum ada
-        if (!is_dir('storage/images')) {
-            mkdir('./storage/images', 0777);
+        if (!File::exists($directory)) {
+            File::makeDirectory($directory, 0777, true, true);
         }
-        //Uploaded image
+
+        // Uploaded image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $name_image = time() . "_polyline." . strtolower($image->getClientOriginalExtension());
-            $image->move('storage/images', $name_image);
+            $image->move($directory, $name_image);
         } else {
             $name_image = null;
         }
@@ -72,38 +62,31 @@ class polylinesController extends Controller
         $this->polylines->create($data);
 
         // Kembali ke halaman peta
-        return redirect()->route('peta')->with('success', 'polylines created successfully.');
+        return redirect()->route('peta')->with('success', 'Polylines created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        // Mencari data berdasarkan ID
+        $polyline = $this->polylines->findOrFail($id);
+        $image = $polyline->image;
+
+        // Menghapus file gambar jika ada di direktori public
+        if ($image != null) {
+            $image_path = public_path('storage/images/' . $image);
+            if (File::exists($image_path)) {
+                File::delete($image_path);
+            }
+        }
+
+        // Menghapus data dari database
+        if (!$polyline->delete()) {
+            return redirect()->route('peta')
+                ->with('error', 'Gagal menghapus data polylines.');
+        }
+
+        // Kembali ke halaman peta
+        return redirect()->route('peta')
+            ->with('success', 'Data polylines berhasil dihapus.');
     }
 }

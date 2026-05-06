@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PolygonModel;
 use Illuminate\Http\Request;
+use Illuminate\Support_Facades\File;
 
 class PolygonController extends Controller
 {
@@ -11,6 +12,7 @@ class PolygonController extends Controller
 
     public function __construct(PolygonModel $polygons)
     {
+        // Pastikan variabel ini konsisten digunakan di semua method
         $this->polygon = $polygons;
     }
 
@@ -19,25 +21,23 @@ class PolygonController extends Controller
         $request->validate([
             'geometry_polygon' => 'required',
             'name' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' // Perbaikan: mimes, bukan mines
         ], [
             'geometry_polygon.required' => 'Field geometry polygon harus diisi.',
             'name.required' => 'Field name harus diisi.',
             'name.string' => 'Field name harus berupa string.',
             'name.max' => 'Field name tidak boleh lebih dari 255 karakter.',
-            'image.mines' => 'File gambar harus berformat JPEG, PNG, atau JPG.',
+            'image.mimes' => 'File gambar harus berformat JPEG, PNG, atau JPG.',
             'image.max' => 'Ukuran gambar tidak boleh lebih dari 2MB',
         ]);
 
-         // Membuat direktori jika belum ada
-        if (!is_dir('storage/images')) {
-            mkdir('./storage/images', 0777);
-        }
-        //Uploaded image
+        // Upload image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $name_image = time() . "_polygon." . strtolower($image->getClientOriginalExtension());
-            $image->move('storage/images', $name_image);
+
+            // Simpan ke public/storage/images agar sesuai dengan helper asset() di blade
+            $image->move(public_path('storage/images'), $name_image);
         } else {
             $name_image = null;
         }
@@ -47,7 +47,6 @@ class PolygonController extends Controller
             'name' => $request->name,
             'description' => $request->description ?? null,
             'image' => $name_image,
-
         ];
 
         $this->polygon->create($data);
@@ -55,23 +54,27 @@ class PolygonController extends Controller
         return redirect()->route('peta')->with('success', 'Polygon berhasil disimpan!');
     }
 
-    public function show(string $id)
-    {
-        //
-    }
-
-    public function edit(string $id)
-    {
-        //
-    }
-
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
     public function destroy(string $id)
     {
-        //
+        // Gunakan $this->polygon (sesuai constructor)
+        $polygonData = $this->polygon->findOrFail($id);
+        $image = $polygonData->image;
+
+        // Menghapus file gambar jika ada di folder public/storage/images
+        if ($image != null) {
+            $path = public_path('storage/images/' . $image);
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
+
+        // Menghapus data dari database
+        if (!$polygonData->delete()) {
+            return redirect()->route('peta')
+                ->with('error', 'Gagal menghapus data polygons.');
+        }
+
+        return redirect()->route('peta')
+            ->with('success', 'Data polygons berhasil dihapus.');
     }
 }

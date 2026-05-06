@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             font-family: Arial, sans-serif;
@@ -30,13 +31,13 @@
                     <h5 class="modal-title">Input Point</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('points.store') }}" method="post"
-                enctype="multipart/form-data">
+                <form action="{{ route('points.store') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="name_point" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name_point" name="name" placeholder="Enter name">
+                            <input type="text" class="form-control" id="name_point" name="name"
+                                placeholder="Enter name">
                         </div>
                         <div class="mb-3">
                             <label for="description_point" class="form-label">Description</label>
@@ -46,12 +47,13 @@
                             <label for="geometry_point" class="form-label">Geometry</label>
                             <textarea class="form-control" id="geometry_point" name="geometry_point" rows="3"></textarea>
                         </div>
-                         <div class="mb-3">
+                        <div class="mb-3">
                             <label for="name_point" class="form-label">Image</label>
-                             <input class="form-control" type="file" id="image" name="image"
-                              onchange="document.getElementById('preview-image-point').src = window.URL.createObjectURL(this.files[0])">
+                            <input class="form-control" type="file" id="image" name="image"
+                                onchange="document.getElementById('preview-image-point').src = window.URL.createObjectURL(this.files[0])">
 
-                              <img src="" alt="" id="preview-image-point" class="img-thumbnail" width="400">
+                            <img src="" alt="" id="preview-image-point" class="img-thumbnail"
+                                width="400">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -71,13 +73,13 @@
                     <h5 class="modal-title">Input Polylines</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('polyline.store') }}" method="post"
-                enctype="multipart/form-data">
+                <form action="{{ route('polyline.store') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="name_polylines" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name_polylines" name="name" placeholder="Enter name">
+                            <input type="text" class="form-control" id="name_polylines" name="name"
+                                placeholder="Enter name">
                         </div>
                         <div class="mb-3">
                             <label for="description_polylines" class="form-label">Description</label>
@@ -89,10 +91,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="name_point" class="form-label">Image</label>
-                             <input class="form-control" type="file" id="image" name="image"
-                              onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
+                            <input class="form-control" type="file" id="image" name="image"
+                                onchange="document.getElementById('preview-image-polyline').src = window.URL.createObjectURL(this.files[0])">
 
-                              <img src="" alt="" id="preview-image-polyline" class="img-thumbnail" width="400">
+                            <img src="" alt="" id="preview-image-polyline" class="img-thumbnail"
+                                width="400">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -112,13 +115,13 @@
                     <h5 class="modal-title">Input Polygon</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('polygons.store') }}" method="post"
-                enctype="multipart/form-data">
+                <form action="{{ route('polygons.store') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="name_polygon" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="name_polygon" name="name" placeholder="Enter name">
+                            <input type="text" class="form-control" id="name_polygon" name="name"
+                                placeholder="Enter name">
                         </div>
                         <div class="mb-3">
                             <label for="description_polygon" class="form-label">Description</label>
@@ -130,10 +133,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="name_point" class="form-label">Image</label>
-                             <input class="form-control" type="file" id="image" name="image"
-                              onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
+                            <input class="form-control" type="file" id="image" name="image"
+                                onchange="document.getElementById('preview-image-polygon').src = window.URL.createObjectURL(this.files[0])">
 
-                              <img src="" alt="" id="preview-image-polygon" class="img-thumbnail" width="400">
+                            <img src="" alt="" id="preview-image-polygon" class="img-thumbnail"
+                                width="400">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -225,17 +229,36 @@
         // GeoJSON Points
         var points = L.geoJSON(null, {
             onEachFeature: function(feature, layer) {
-                var popup_content = "Nama: " + feature.properties.name + "<br>" +
-                    "Deskripsi: " + feature.properties.description + "<br>" +
-                    "Dibuat: " + feature.properties.created_at
-                    + "<br>" +
-                     "<img src='{{ asset('storage/images') }}/" + feature.properties.image + "' alt='' class='img-thumbnail' width='400'>";
 
-                    ;
+                // route delete (dinamis berdasarkan id)
+                var routedelete = "{{ route('points.delete', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
+                // ambil csrf token dari Laravel
+                var csrf = "{{ csrf_token() }}";
+
+                // popup content
+                var popup_content =
+                    "Nama: " + feature.properties.name + "<br>" +
+                    "Deskripsi: " + feature.properties.description + "<br>" +
+                    "Dibuat: " + feature.properties.created_at + "<br>" +
+
+                    "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
+                    "' class='img-thumbnail' width='400'><br><br>" +
+
+                    "<form action='" + routedelete + "' method='POST'>" +
+                    "<input type='hidden' name='_token' value='" + csrf + "'>" +
+                    "<input type='hidden' name='_method' value='DELETE'>" +
+                    "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Yakin hapus data?\")''>" +
+                    "<i class='fa fa-trash'></i> Delete" +
+                    "</button>" +
+                    "</form>";
+
                 layer.bindPopup(popup_content);
             }
         });
 
+        // load data geojson
         $.getJSON("{{ route('geojson.points') }}", function(data) {
             points.addData(data);
             map.addLayer(points);
@@ -243,16 +266,33 @@
 
         // GeoJSON Polylines
         var polylines = L.geoJSON(null, {
-            onEachFeature: function(feature, layer) {
-                var popup_content = "Nama: " + feature.properties.name + "<br>" +
-                    "Deskripsi: " + feature.properties.description + "<br>" +
-                    "Dibuat: " + feature.properties.created_at
-                    + "<br>" +
-                     "<img src='{{ asset('storage/images') }}/" + feature.properties.image + "' alt='' class='img-thumbnail' width='400'>";
-                    ;
-                layer.bindPopup(popup_content);
-            }
-        });
+    onEachFeature: function(feature, layer) {
+
+        //Route Delete Polylines
+                var routedelete = "{{ route('polylines.delete', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
+        var csrf = "{{ csrf_token() }}";
+
+        var popup_content =
+            "Nama: " + feature.properties.name + "<br>" +
+            "Deskripsi: " + feature.properties.description + "<br>" +
+            "Dibuat: " + feature.properties.created_at + "<br>" +
+
+            "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
+            "' class='img-thumbnail' width='400'><br><br>" +
+
+            "<form action='" + routedelete + "' method='POST'>" +
+            "<input type='hidden' name='_token' value='" + csrf + "'>" +
+            "<input type='hidden' name='_method' value='DELETE'>" +
+            "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Yakin hapus data?\")'>" +
+            "<i class='fa fa-trash'></i> Delete" +
+            "</button>" +
+            "</form>";
+
+        layer.bindPopup(popup_content);
+    }
+});
 
         $.getJSON("{{ route('geojson.polylines') }}", function(data) {
             polylines.addData(data);
@@ -262,12 +302,29 @@
         // GeoJSON Polygons
         var polygons = L.geoJSON(null, {
             onEachFeature: function(feature, layer) {
-                var popup_content = "Nama: " + feature.properties.name + "<br>" +
+
+                //Route Delete Point
+                var routedelete = "{{ route('polygons.delete', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
+                var csrf = "{{ csrf_token() }}";
+
+                var popup_content =
+                    "Nama: " + feature.properties.name + "<br>" +
                     "Deskripsi: " + feature.properties.description + "<br>" +
-                    "Dibuat: " + feature.properties.created_at
-                    + "<br>" +
-                     "<img src='{{ asset('storage/images') }}/" + feature.properties.image + "' alt='' class='img-thumbnail' width='400'>";
-                    ;
+                    "Dibuat: " + feature.properties.created_at + "<br>" +
+
+                    "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
+                    "' class='img-thumbnail' width='400'><br><br>" +
+
+                    "<form action='" + routedelete + "' method='POST'>" +
+                    "<input type='hidden' name='_token' value='" + csrf + "'>" +
+                    "<input type='hidden' name='_method' value='DELETE'>" +
+                    "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Yakin hapus data?\")'>" +
+                    "<i class='fa fa-trash'></i> Delete" +
+                    "</button>" +
+                    "</form>";
+
                 layer.bindPopup(popup_content);
             }
         });
