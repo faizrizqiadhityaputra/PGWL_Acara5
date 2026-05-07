@@ -234,6 +234,10 @@
                 var routedelete = "{{ route('points.delete', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
+                // route edit (dinamis berdasarkan id)
+                var routedelete = "{{ route('points.edit', ':id') }}";
+                routedelete = routedelete.replace(':id', feature.properties.id);
+
                 // ambil csrf token dari Laravel
                 var csrf = "{{ csrf_token() }}";
 
@@ -245,14 +249,22 @@
 
                     "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
                     "' class='img-thumbnail' width='400'><br><br>" +
-
+                    "<div class='row'>" +
+                    "<div class='col-2'>" +
                     "<form action='" + routedelete + "' method='POST'>" +
                     "<input type='hidden' name='_token' value='" + csrf + "'>" +
                     "<input type='hidden' name='_method' value='DELETE'>" +
-                    "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Yakin hapus data?\")''>" +
+                    "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Yakin hapus data?\")'>" +
                     "<i class='fa fa-trash'></i> Delete" +
                     "</button>" +
-                    "</form>";
+                    "</form>" +
+                    "</div>" + // Menutup div col-6
+                    "<div class='col-6'>" + // Menambah pembungkus untuk tombol Edit agar sejajar
+                    "<a href='" + routeedit + "' class='btn btn-warning btn-sm' title='Edit point'>" +
+                    "<i class='fa-solid fa-pen-to-square'></i> Edit" +
+                    "</a>" +
+                    "</div>" +
+                    "</div>";
 
                 layer.bindPopup(popup_content);
             }
@@ -266,33 +278,33 @@
 
         // GeoJSON Polylines
         var polylines = L.geoJSON(null, {
-    onEachFeature: function(feature, layer) {
+            onEachFeature: function(feature, layer) {
 
-        //Route Delete Polylines
+                //Route Delete Polylines
                 var routedelete = "{{ route('polylines.delete', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 
-        var csrf = "{{ csrf_token() }}";
+                var csrf = "{{ csrf_token() }}";
 
-        var popup_content =
-            "Nama: " + feature.properties.name + "<br>" +
-            "Deskripsi: " + feature.properties.description + "<br>" +
-            "Dibuat: " + feature.properties.created_at + "<br>" +
+                var popup_content =
+                    "Nama: " + feature.properties.name + "<br>" +
+                    "Deskripsi: " + feature.properties.description + "<br>" +
+                    "Dibuat: " + feature.properties.created_at + "<br>" +
 
-            "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
-            "' class='img-thumbnail' width='400'><br><br>" +
+                    "<img src='{{ asset('storage/images') }}/" + feature.properties.image +
+                    "' class='img-thumbnail' width='400'><br><br>" +
 
-            "<form action='" + routedelete + "' method='POST'>" +
-            "<input type='hidden' name='_token' value='" + csrf + "'>" +
-            "<input type='hidden' name='_method' value='DELETE'>" +
-            "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Yakin hapus data?\")'>" +
-            "<i class='fa fa-trash'></i> Delete" +
-            "</button>" +
-            "</form>";
+                    "<form action='" + routedelete + "' method='POST'>" +
+                    "<input type='hidden' name='_token' value='" + csrf + "'>" +
+                    "<input type='hidden' name='_method' value='DELETE'>" +
+                    "<button type='submit' class='btn btn-sm btn-danger' onclick='return confirm(\"Yakin hapus data?\")'>" +
+                    "<i class='fa fa-trash'></i> Delete" +
+                    "</button>" +
+                    "</form>";
 
-        layer.bindPopup(popup_content);
-    }
-});
+                layer.bindPopup(popup_content);
+            }
+        });
 
         $.getJSON("{{ route('geojson.polylines') }}", function(data) {
             polylines.addData(data);
@@ -303,7 +315,7 @@
         var polygons = L.geoJSON(null, {
             onEachFeature: function(feature, layer) {
 
-                //Route Delete Point
+                //Route Delete Polygon
                 var routedelete = "{{ route('polygons.delete', ':id') }}";
                 routedelete = routedelete.replace(':id', feature.properties.id);
 

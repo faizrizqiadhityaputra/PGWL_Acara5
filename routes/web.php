@@ -18,6 +18,8 @@ Route::post('/points', [PointsController::class, 'store'])
     ->name('points.store');
 Route::delete('/delete-points/{id}', [PointsController::class, 'destroy'])
     ->name('points.delete');
+Route::delete('/edit-points/{id}', [PointsController::class, 'edit'])
+    ->name('points.edit');
 
 //Polylines
 Route::post('/polylines', [polylinesController::class, 'store'])
