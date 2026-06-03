@@ -10,9 +10,19 @@
             <x-app-logo href="{{ route('dashboard') }}" wire:navigate />
 
             <flux:navbar class="-mb-px max-lg:hidden">
-                <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:navbar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
+                <flux:navbar.item icon="house" :href="route('home')" :current="request()->routeIs('home')" wire:navigate>
+                    {{ __('Beranda') }}
+                </flux:navbar.item>
+                <flux:navbar.item icon="map" :href="route('peta')" :current="request()->routeIs('peta')" wire:navigate>
+                    {{ __('Peta') }}
+                </flux:navbar.item>
+                <flux:navbar.item icon="table-cells" :href="route('tabel')" :current="request()->routeIs('tabel')" wire:navigate>
+                    {{ __('Tabel') }}
+                </flux:navbar.item>
+                <flux:navbar.item icon="info" href="#tentang" :label="__('Tentang')" />
             </flux:navbar>
 
             <flux:spacer />

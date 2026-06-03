@@ -29,20 +29,17 @@ class polylinesController extends Controller
                 'name.required' => 'Field name harus diisi.',
                 'name.string' => 'Field name harus berupa string.',
                 'name.max' => 'Field name tidak boleh lebih dari 255 karakter.',
-                'image.mimes' => 'File gambar harus berformat JPEG, PNG, atau JPG.', // Perbaikan typo 'mines' -> 'mimes'
+                'image.mimes' => 'File gambar harus berformat JPEG, PNG, atau JPG.',
                 'image.max' => 'Ukuran gambar tidak boleh lebih dari 2MB',
             ]
         );
 
-        // Path direktori ke public/storage/images agar bisa diakses helper asset()
         $directory = public_path('storage/images');
 
-        // Membuat direktori jika belum ada
         if (!File::exists($directory)) {
             File::makeDirectory($directory, 0777, true, true);
         }
 
-        // Uploaded image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $name_image = time() . "_polyline." . strtolower($image->getClientOriginalExtension());
@@ -58,20 +55,70 @@ class polylinesController extends Controller
             'image' => $name_image,
         ];
 
-        // Simpan data ke database
         $this->polylines->create($data);
 
-        // Kembali ke halaman peta
         return redirect()->route('peta')->with('success', 'Polylines created successfully.');
+    }
+
+    // --- TAMBAHAN BARU: FUNGSI EDIT ---
+    public function edit(string $id)
+    {
+         $data = [
+            'title' => 'Edit Polyline',
+            'id' => $id
+        ];
+
+        return view('edit_polyline', $data);
+    }
+
+    // --- TAMBAHAN BARU: FUNGSI UPDATE ---
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'geometry_polylines' => 'required', // Sesuaikan nama name pada textarea blade
+            'name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        $polyline = $this->polylines->findOrFail($id);
+
+        $directory = public_path('storage/images');
+
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama
+            if ($polyline->image != null) {
+                $image_path = public_path('storage/images/' . $polyline->image);
+                if (File::exists($image_path)) {
+                    File::delete($image_path);
+                }
+            }
+
+            // Upload baru
+            $image = $request->file('image');
+            $name_image = time() . "_polyline." . strtolower($image->getClientOriginalExtension());
+            $image->move($directory, $name_image);
+        } else {
+            $name_image = $polyline->image;
+        }
+
+        $data = [
+            'geom' => $request->geometry_polylines,
+            'name' => $request->name,
+            'description' => $request->description,
+            'image' => $name_image,
+        ];
+
+        $polyline->update($data);
+
+        return redirect()->route('peta')->with('success', 'Data polylines berhasil diupdate.');
     }
 
     public function destroy(string $id)
     {
-        // Mencari data berdasarkan ID
         $polyline = $this->polylines->findOrFail($id);
         $image = $polyline->image;
 
-        // Menghapus file gambar jika ada di direktori public
         if ($image != null) {
             $image_path = public_path('storage/images/' . $image);
             if (File::exists($image_path)) {
@@ -79,13 +126,11 @@ class polylinesController extends Controller
             }
         }
 
-        // Menghapus data dari database
         if (!$polyline->delete()) {
             return redirect()->route('peta')
                 ->with('error', 'Gagal menghapus data polylines.');
         }
 
-        // Kembali ke halaman peta
         return redirect()->route('peta')
             ->with('success', 'Data polylines berhasil dihapus.');
     }

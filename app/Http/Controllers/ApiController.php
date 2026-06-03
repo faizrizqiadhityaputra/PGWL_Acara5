@@ -22,7 +22,13 @@ class ApiController extends Controller
 
     public function geojson_points()
     {
-        $data = $this->points->geojson();
+        $data = $this->points->geojson_points();
+        return response()->json($data, 200, [], JSON_NUMERIC_CHECK);
+    }
+
+    public function geojson_point($id)
+    {
+        $data = $this->points->geojson_point($id);
         return response()->json($data, 200, [], JSON_NUMERIC_CHECK);
     }
 
@@ -32,9 +38,22 @@ class ApiController extends Controller
         return response()->json($data, 200, [], JSON_NUMERIC_CHECK);
     }
 
+    public function geojson_polyline($id)
+    {
+        $data = $this->polylines->geojson_polyline($id);
+        return response()->json($data, 200, [], JSON_NUMERIC_CHECK);
+    }
+
     public function geojson_polygons()
     {
         $data = $this->polygon->geojson();
+        return response()->json($data, 200, [], JSON_NUMERIC_CHECK);
+    }
+
+    // TAMBAHAN BARU
+    public function geojson_polygon($id)
+    {
+        $data = $this->polygon->geojson_polygon($id);
         return response()->json($data, 200, [], JSON_NUMERIC_CHECK);
     }
 }

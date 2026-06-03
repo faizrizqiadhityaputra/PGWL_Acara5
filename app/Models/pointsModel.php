@@ -8,22 +8,64 @@ use Illuminate\Support\Facades\DB;
 class pointsModel extends Model
 {
     protected $table = 'points';
+
     protected $guarded = ['id'];
 
-    public function geojson()
+    /**
+     * Menampilkan semua point dalam format GeoJSON
+     */
+    public function geojson_points()
     {
-        $points = $this->select(DB::raw('id, ST_AsGeoJSON(geom) as geojson, name, description, image, created_at, updated_at'))
-            ->get();
+        $points = $this->select(DB::raw("
+            id,
+            ST_AsGeoJSON(geom) as geojson,
+            name,
+            description,
+            image,
+            created_at,
+            updated_at
+        "))->get();
 
+        return $this->build_geojson($points);
+    }
+
+    /**
+     * Menampilkan satu point berdasarkan ID
+     */
+    public function geojson_point($id)
+    {
+        $points = $this->select(DB::raw("
+            id,
+            ST_AsGeoJSON(geom) as geojson,
+            name,
+            description,
+            image,
+            created_at,
+            updated_at
+        "))
+        ->where('id', $id)
+        ->get();
+
+        return $this->build_geojson($points);
+    }
+
+    /**
+     * Membentuk struktur GeoJSON
+     */
+    private function build_geojson($points)
+    {
         $geojson = [
             'type' => 'FeatureCollection',
             'features' => []
         ];
 
         foreach ($points as $p) {
-            $features = [
+
+            $feature = [
                 'type' => 'Feature',
-                'geometry' => json_decode($p->geojson), // <-- FIX DI SINI
+
+                'geometry' => json_decode($p->geojson),
+
                 'properties' => [
                     'id' => $p->id,
                     'name' => $p->name,
@@ -34,7 +76,7 @@ class pointsModel extends Model
                 ]
             ];
 
-            array_push($geojson['features'], $features);
+            $geojson['features'][] = $feature;
         }
 
         return $geojson;

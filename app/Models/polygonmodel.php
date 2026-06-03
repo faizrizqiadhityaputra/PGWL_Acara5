@@ -15,6 +15,22 @@ class polygonModel extends Model
         $polygons = $this->select(DB::raw('id, ST_AsGeoJSON(geom) as geojson, name, description, image, created_at, updated_at'))
             ->get();
 
+        return $this->build_geojson($polygons);
+    }
+
+    // Fungsi baru untuk mengambil satu polygon berdasarkan ID
+    public function geojson_polygon($id)
+    {
+        $polygons = $this->select(DB::raw('id, ST_AsGeoJSON(geom) as geojson, name, description, image, created_at, updated_at'))
+            ->where('id', $id)
+            ->get();
+
+        return $this->build_geojson($polygons);
+    }
+
+    // Fungsi pembantu untuk merakit struktur GeoJSON
+    private function build_geojson($polygons)
+    {
         $geojson = [
             'type' => 'FeatureCollection',
             'features' => []

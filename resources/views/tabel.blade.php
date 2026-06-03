@@ -1,9 +1,42 @@
 @extends('layouts.template')
 
 @section('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.dataTables.css">
     <style>
         body {
-            background: #f5f7fb;
+            background-color: #f5f7fb;
+        }
+
+        .container {
+            max-width: 100vw !important;
+            width: 100vw !important;
+            padding-left: 2vw !important;
+            padding-right: 2vw !important;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 1vw !important;
+                padding-right: 1vw !important;
+            }
+        }
+
+        .card {
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .card-body {
+            width: 100%;
+            padding-left: 0.5vw;
+            padding-right: 0.5vw;
+        }
+
+        table.table {
+            width: 100% !important;
         }
 
         .card {
@@ -13,95 +46,172 @@
         }
 
         .card-header {
-            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+            background: #0d6efd;
             color: white;
             font-weight: 600;
+            border-radius: 12px 12px 0 0;
         }
 
         thead {
-            background: #e9f2ff;
+            background-color: #e9f2ff;
         }
 
         th {
             text-align: center;
+            font-weight: 600;
         }
 
-        td, th {
-            padding: 1rem 0.75rem;
+        td {
             vertical-align: middle;
         }
 
         tbody tr:hover {
-            background: #f1f7ff;
+            background-color: #f1f7ff;
+            transition: 0.2s;
         }
     </style>
 @endsection
 
-
 @section('content')
+    <!-- Content -->
     <div class="container mt-4">
 
-        <div class="card">
+        <div class="card mt-4">
 
             <div class="card-header">
-                <h4>Tabel Data Lokasi</h4>
+                <h3 class="mb-0">Tabel Data Point</h3>
             </div>
 
             <div class="card-body">
 
-                <table class="table table-bordered table-striped">
+                <table class="table table-bordered table-striped table-hover align-middle" id="tabledatapoints">
 
                     <thead>
                         <tr>
-                            <th>No</th>
+                            <th style="width:60px;">No</th>
                             <th>Nama</th>
                             <th>Deskripsi</th>
-                            <th>Gambar</th>
+                            <th>Foto</th>
+                            <th>Tanggal Dibuat</th>
                         </tr>
                     </thead>
 
                     <tbody>
-
-                        <tr>
-                            <td>1</td>
-                            <td>Candi Prambanan</td>
-                            <td>Candi Hindu terbesar di Indonesia, dibangun pada abad ke-9 Masehi. [3]</td>
-                            <td><img src="https://via.placeholder.com/150/8B4513/FFFFFF?Text=Prambanan" alt="Candi Prambanan" width="100"></td>
-                        </tr>
-
-                        <tr>
-                            <td>2</td>
-                            <td>Keraton Yogyakarta</td>
-                            <td>Istana resmi Kesultanan Ngayogyakarta Hadiningrat. [4]</td>
-                            <td><img src="https://via.placeholder.com/150/FFD700/000000?Text=Keraton" alt="Keraton Yogyakarta" width="100"></td>
-                        </tr>
-
-                        <tr>
-                            <td>3</td>
-                            <td>Jalan Malioboro</td>
-                            <td>Nama salah satu jalan tiga di pusat Kota Yogyakarta. Membentang dari Tugu Yogyakarta hingga ke perempatan Kantor Pos Yogyakarta. [8]</td>
-                            <td><img src="https://via.placeholder.com/150/008080/FFFFFF?Text=Malioboro" alt="Jalan Malioboro" width="100"></td>
-                        </tr>
-
-                        <tr>
-                            <td>4</td>
-                            <td>Taman Sari</td>
-                            <td>Situs bekas taman atau kebun istana Keraton Ngayogyakarta Hadiningrat. [1, 2]</td>
-                            <td><img src="https://via.placeholder.com/150/2E8B57/FFFFFF?Text=Taman+Sari" alt="Taman Sari" width="100"></td>
-                        </tr>
-
-                        <tr>
-                            <td>5</td>
-                            <td>Pantai Parangtritis</td>
-                            <td>Pantai di pesisir Samudra Hindia yang terletak di Kabupaten Bantul. [12]</td>
-                            <td><img src="https://via.placeholder.com/150/4682B4/FFFFFF?Text=Parangtritis" alt="Pantai Parangtritis" width="100"></td>
-                        </tr>
-
+                        @php
+                            $no = 1;
+                        @endphp
+                        @foreach ($points as $p)
+                            <tr>
+                                <td>{{ $no++ }}</td>
+                                <td>{{ $p['name'] }}</td>
+                                <td>{{ $p['description'] }}</td>
+                                <td>
+                                    <img src='{{ asset('storage/images/') . '/' . $p['image'] }}' alt='' width='300px;'>
+                                </td>
+                                <td>{{ $p['created_at'] }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
 
                 </table>
 
             </div>
         </div>
+
+        <div class="card mt-4">
+
+            <div class="card-header">
+                <h3 class="mb-0">Tabel Data Polyline</h3>
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-bordered table-striped table-hover align-middle" id="tabledatapolylines">
+
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">No</th>
+                            <th>Nama</th>
+                            <th>Deskripsi</th>
+                            <th>Foto</th>
+                            <th>Tanggal Dibuat</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @php
+                            $no = 1;
+                        @endphp
+                        @foreach ($polylines as $p)
+                            <tr>
+                                <td>{{ $no++ }}</td>
+                                <td>{{ $p['name'] }}</td>
+                                <td>{{ $p['description'] }}</td>
+                                <td>
+                                    <img src='{{ asset('storage/images/') . '/' . $p['image'] }}' alt='' width='300px;'>
+                                </td>
+                                <td>{{ $p['created_at'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+        <div class="card mt-4">
+
+            <div class="card-header">
+                <h3 class="mb-0">Tabel Data Polygon</h3>
+            </div>
+
+            <div class="card-body">
+
+                <table class="table table-bordered table-striped table-hover align-middle" id="tabledatapolygons">
+
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">No</th>
+                            <th>Nama</th>
+                            <th>Deskripsi</th>
+                            <th>Foto</th>
+                            <th>Tanggal Dibuat</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @php
+                            $no = 1;
+                        @endphp
+                        @foreach ($polygons as $p)
+                            <tr>
+                                <td>{{ $no++ }}</td>
+                                <td>{{ $p['name'] }}</td>
+                                <td>{{ $p['description'] }}</td>
+                                <td>
+                                    <img src='{{ asset('storage/images/') . '/' . $p['image'] }}' alt='' width='300px;'>
+                                </td>
+                                <td>{{ $p['created_at'] }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
     </div>
+@endsection
+
+@section('scripts')
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.3.8/js/dataTables.js"></script>
+
+    <script>
+        new DataTable('#tabledatapoints');
+        new DataTable('#tabledatapolylines');
+        new DataTable('#tabledatapolygons');
+    </script>
 @endsection

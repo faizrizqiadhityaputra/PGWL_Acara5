@@ -8,11 +8,17 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('/points', [ApiController::class, 'geojson_points'])
-    ->name('geojson.points');
+// Semua points
+Route::get('/points', [ApiController::class, 'geojson_points'])->name('geojson.points');
+// Detail point berdasarkan ID
+Route::get('/points/{id}', [ApiController::class, 'geojson_point'])->name('geojson.point');
 
-Route::get('/polylines', [ApiController::class, 'geojson_polylines'])
-    ->name('geojson.polylines');
+// Semua Polyline
+Route::get('/polylines', [ApiController::class, 'geojson_polylines'])->name('geojson.polylines');
+// Detail polyline berdasarkan ID
+Route::get('/polylines/{id}', [ApiController::class, 'geojson_polyline'])->name('geojson.polyline');
 
-Route::get('/polygons', [ApiController::class, 'geojson_polygons'])
-    ->name('geojson.polygons');
+// Semua Polygon
+Route::get('/polygons', [ApiController::class, 'geojson_polygons'])->name('geojson.polygons');
+// TAMBAHAN BARU: Detail polygon berdasarkan ID
+Route::get('/polygons/{id}', [ApiController::class, 'geojson_polygon'])->name('geojson.polygon');
