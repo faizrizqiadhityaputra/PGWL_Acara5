@@ -14,7 +14,7 @@
     @yield('styles')
 </head>
 
-    @include('components.navbar')
+<body> @include('components.navbar')
 
     @yield('content')
 
@@ -24,7 +24,5 @@
     @yield('scripts')
 
     @include('components.toast')
-</body>
-</body>
 
-</html>
+</body> </html>

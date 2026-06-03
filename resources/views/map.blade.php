@@ -38,6 +38,12 @@
             line-height: 24px;
         }
 
+        /* Pastikan navbar atau header dari template selalu tampil menumpuk di atas peta */
+        nav, .navbar, header, .fixed-top {
+            position: relative;
+            z-index: 9999 !important;
+        }
+
     </style>
 @endsection
 

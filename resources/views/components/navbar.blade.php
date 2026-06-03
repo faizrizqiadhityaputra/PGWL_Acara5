@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom">
+<nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom" style="position: relative; z-index: 1050;">
     <div class="container-fluid px-4">
 
         <a class="navbar-brand fw-bold text-primary" href="{{ route('home') }}">
@@ -9,7 +9,8 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- Tambahkan style visibility: visible !important; untuk melawan Tailwind CSS -->
+<div class="collapse navbar-collapse" id="navbarNav" style="visibility: visible !important;">
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-3">
                 <li class="nav-item">
